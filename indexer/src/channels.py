@@ -4,7 +4,7 @@ from .models import Channel
 development_channel = Channel(
     id="development",
     title="Development Channel",
-    description="Latest builds, not yet tested by Flipper QA, be careful",
+    description="Latest builds, might sometimes be unstable",
 )
 # release_candidate_channel = Channel(
 #     id="release-candidate",
@@ -14,5 +14,5 @@ development_channel = Channel(
 release_channel = Channel(
     id="release",
     title="Stable Release Channel",
-    description="Stable releases, tested by Flipper QA",
+    description="Less frequent, more stable releases",
 )
