@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from fastapi import APIRouter
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse, FileResponse
 
 from .repository import indexes
 
@@ -50,6 +50,34 @@ async def latest_request(directory, channel, target, file_type):
         return JSONResponse("No channels found!", status_code=404)
     try:
         return index.get_file_from_latest_version(channel, target, file_type)
+    except Exception as e:
+        return JSONResponse(str(e), status_code=404)
+
+
+@router.get(
+    "/{directory}/{channel}/{file_name}",
+    response_class=FileResponse,
+    status_code=200,
+)
+async def latest_request(directory, channel, file_name):
+    """
+    A method for retrieving a file from the repository
+    of a specific version
+    Args:
+        directory: Repository name
+        channel: Channel type (release, rc, dev)
+        file_name: File Name
+
+    Returns:
+        Artifact file
+    """
+    if directory not in indexes:
+        return JSONResponse(f"{directory} not found!", status_code=404)
+    index = indexes.get(directory)
+    if len(index.index["channels"]) == 0:
+        return JSONResponse("No channels found!", status_code=404)
+    try:
+        return index.get_file_path(channel, file_name)
     except Exception as e:
         return JSONResponse(str(e), status_code=404)
 
