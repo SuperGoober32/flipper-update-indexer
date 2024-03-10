@@ -4,6 +4,7 @@ import os
 import logging
 import uvicorn
 from fastapi import FastAPI, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
 from src import directories, file_upload, security
 from src.repository import indexes, raw_file_upload_directories
 from src.settings import settings
@@ -40,6 +41,17 @@ def startup_event() -> None:
 
 app.include_router(file_upload.router)
 app.include_router(directories.router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://momentum-fw.dev",
+        "http://localhost:8080",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def main() -> None:
