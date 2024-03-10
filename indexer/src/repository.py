@@ -142,27 +142,27 @@ indexes = {
         github_repo=settings.firmware_github_repo,
         github_org=settings.github_org,
     ),
-    "qFlipper": RepositoryIndex(
-        directory="qFlipper",
-        github_token=settings.qFlipper_github_token,
-        github_repo=settings.qFlipper_github_repo,
-        github_org=settings.github_org,
-        file_parser=qFlipperFileParser,
-    ),
-    "blackmagic-firmware": RepositoryIndex(
-        directory="blackmagic-firmware",
-        github_token=settings.blackmagic_github_token,
-        github_repo=settings.blackmagic_github_repo,
-        github_org=settings.github_org,
-        file_parser=blackmagicFileParser,
-    ),
-    "vgm-firmware": RepositoryIndex(
-        directory="vgm-firmware",
-        github_token=settings.vgm_github_token,
-        github_repo=settings.vgm_github_repo,
-        github_org=settings.github_org,
-        file_parser=vgmFileParser,
-    ),
+    # "qFlipper": RepositoryIndex(
+    #     directory="qFlipper",
+    #     github_token=settings.qFlipper_github_token,
+    #     github_repo=settings.qFlipper_github_repo,
+    #     github_org=settings.github_org,
+    #     file_parser=qFlipperFileParser,
+    # ),
+    # "blackmagic-firmware": RepositoryIndex(
+    #     directory="blackmagic-firmware",
+    #     github_token=settings.blackmagic_github_token,
+    #     github_repo=settings.blackmagic_github_repo,
+    #     github_org=settings.github_org,
+    #     file_parser=blackmagicFileParser,
+    # ),
+    # "vgm-firmware": RepositoryIndex(
+    #     directory="vgm-firmware",
+    #     github_token=settings.vgm_github_token,
+    #     github_repo=settings.vgm_github_repo,
+    #     github_org=settings.github_org,
+    #     file_parser=vgmFileParser,
+    # ),
 }
 
 raw_file_upload_directories = ["toolchain"]

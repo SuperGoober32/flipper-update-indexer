@@ -140,15 +140,15 @@ def parse_github_channels(
     )
     json.add_channel(
         parse_release_channel(
-            copy.deepcopy(release_candidate_channel),
+            copy.deepcopy(release_channel),
             directory,
             file_parser,
             indexer_github,
         )
     )
-    json.add_channel(
-        parse_rc_channel(
-            copy.deepcopy(release_channel), directory, file_parser, indexer_github
-        )
-    )
+    # json.add_channel(
+    #     parse_rc_channel(
+    #         copy.deepcopy(release_candidate_channel), directory, file_parser, indexer_github
+    #     )
+    # )
     return json.dict()
