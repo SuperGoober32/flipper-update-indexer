@@ -156,9 +156,7 @@ class FileParser(BaseModel):
         return sha256
 
     def parse(self, filename: str) -> None:
-        regex = re.compile(
-            r"^flipper-z-(\w+)-(\w+)-([0-9.]+(-rc)?|(dev-\w+-\w+))\.(\w+)$"
-        )
+        regex = re.compile(r"^flipper-z-(\w+)-(\w+)-mntm-([0-9]+(-rc)?|(dev-\w+))\.(\w+)$")
         match = regex.match(filename)
         if not match:
             exception_msg = f"Unknown file {filename}"

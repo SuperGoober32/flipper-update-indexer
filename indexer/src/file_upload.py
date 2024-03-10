@@ -14,7 +14,7 @@ from .settings import settings
 router = APIRouter()
 lock = asyncio.Lock()
 # it's global just for speed up via regex pre-compiling on app start
-__reindex_regexp__ = re.compile(r"^((\d+\.\d+\.\d+)($|(-rc$)))|dev$")
+__reindex_regexp__ = re.compile(r"^mntm-\d+$|^dev$")
 
 TOKEN_FILENAME = ".version_id"
 

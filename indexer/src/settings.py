@@ -1,6 +1,7 @@
 import os
 from pydantic import BaseModel
 from typing import List
+import pathlib
 
 
 class Settings(BaseModel):
@@ -30,10 +31,10 @@ class Settings(BaseModel):
 settings = Settings(
     port=8000,
     workers=1,
-    files_dir=os.getenv("INDEXER_FILES_DIR"),
-    base_url=os.getenv("INDEXER_BASE_URL"),
+    files_dir=str(pathlib.Path(__file__).parent.parent.parent / "files"),
+    base_url="https://up.momentum-fw.dev/",
     token=os.getenv("INDEXER_TOKEN"),
-    github_org=os.getenv("INDEXER_GITHUB_ORGANIZATION"),
+    github_org="Next-Flip",
     gelf_host=os.getenv("GELF_HOST"),
     gelf_port=os.getenv("GELF_PORT"),
     kubernetes_namespace=os.getenv("KUBERNETES_NAMESPACE"),
@@ -41,7 +42,7 @@ settings = Settings(
     kubernetes_container=os.getenv("KUBERNETES_CONTAINER"),
     kubernetes_pod=os.getenv("HOSTNAME"),
     firmware_github_token=os.getenv("INDEXER_FIRMWARE_GITHUB_TOKEN"),
-    firmware_github_repo=os.getenv("INDEXER_FIRMWARE_GITHUB_REPO"),
+    firmware_github_repo="Momentum-Firmware",
     # qFlipper_github_token=os.getenv("INDEXER_QFLIPPER_GITHUB_TOKEN"),
     # qFlipper_github_repo=os.getenv("INDEXER_QFLIPPER_GITHUB_REPO"),
     # blackmagic_github_token=os.getenv("INDEXER_BLACKMAGIC_GITHUB_TOKEN"),
