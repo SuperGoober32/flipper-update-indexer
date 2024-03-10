@@ -120,7 +120,7 @@ class IndexerGithub:
             logging.warning(f"No releases found for {self.__repo.full_name}!")
             return None
         try:
-            last_release = next(filter(lambda c: c.prerelease, releases))
+            last_release = next(filter(lambda c: not c.prerelease, releases))
             return Version(
                 version=last_release.title,
                 changelog=last_release.body,
@@ -135,7 +135,7 @@ class IndexerGithub:
             logging.warning(f"No release-candidates found for {self.__repo.full_name}!")
             return None
         try:
-            last_release = next(filter(lambda c: not c.prerelease, releases))
+            last_release = next(filter(lambda c: c.prerelease, releases))
             return Version(
                 version=last_release.title,
                 changelog=last_release.body,
