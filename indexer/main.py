@@ -46,6 +46,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://momentum-fw.dev",
+        "http://localhost:8000",
         "http://localhost:8080",
     ],
     allow_credentials=True,
