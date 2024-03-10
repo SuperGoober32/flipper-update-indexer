@@ -123,7 +123,7 @@ class IndexerGithub:
             last_release = next(filter(lambda c: not c.prerelease, releases))
             return Version(
                 version=last_release.title,
-                changelog=last_release.body.split("## 🚀 Changelog\n", 1)[-1],
+                changelog=last_release.body.split("## 🚀 Changelog", 1)[-1].strip(),
                 timestamp=int(last_release.created_at.timestamp()),
             )
         except StopIteration:
