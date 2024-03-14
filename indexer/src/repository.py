@@ -133,9 +133,7 @@ class RepositoryIndex:
             logging.exception(e)
             raise e
 
-    def get_file_path(
-        self: str, channel: str, file_name: str
-    ) -> str:
+    def get_file_path(self: str, channel: str, file_name: str) -> str:
         """
         A method to get a file in the latest version of the
         current directory by its target and type
