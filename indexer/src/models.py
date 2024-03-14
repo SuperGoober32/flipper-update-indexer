@@ -129,21 +129,6 @@ class IndexerGithub:
         except StopIteration:
             return None
 
-    def get_rc_version(self) -> Version:
-        releases = self.__repo.get_releases()
-        if releases.totalCount == 0:
-            logging.warning(f"No release-candidates found for {self.__repo.full_name}!")
-            return None
-        try:
-            last_release = next(filter(lambda c: c.prerelease, releases))
-            return Version(
-                version=last_release.title,
-                changelog=last_release.body,
-                timestamp=int(last_release.created_at.timestamp()),
-            )
-        except StopIteration:
-            return None
-
 
 class FileParser(BaseModel):
     target: str = ""
@@ -156,73 +141,7 @@ class FileParser(BaseModel):
         return sha256
 
     def parse(self, filename: str) -> None:
-        regex = re.compile(r"^flipper-z-(\w+)-(\w+)-mntm-([0-9]+(-rc)?|(dev-\w+))\.(\w+)$")
-        match = regex.match(filename)
-        if not match:
-            exception_msg = f"Unknown file {filename}"
-            logging.exception(exception_msg)
-            raise Exception(exception_msg)
-        self.target = match.group(1)
-        self.type = match.group(2) + "_" + match.group(6)
-
-
-class qFlipperFileParser(FileParser):
-    def parse(self, filename: str) -> None:
-        regex = re.compile(
-            r"^(qFlipper\w*)(-.+)*-([0-9.a]+(-rc\d+)?|(dev-\w+-\w+))\.(\w+)$"
-        )
-        match = regex.match(filename)
-        if not match:
-            return
-        arch = match.group(2)
-        extention = match.group(6)
-        if extention == "dmg":
-            target = "macos"
-            file_type = "dmg"
-        elif extention == "zip":
-            target = "windows"
-            file_type = "portable"
-        elif extention == "AppImage":
-            target = "linux"
-            file_type = "AppImage"
-        elif extention == "exe":
-            target = "windows"
-            file_type = "installer"
-        else:
-            exception_msg = f"Unknown file extention {extention}"
-            logging.exception(exception_msg)
-            raise Exception(exception_msg)
-        if extention == "dmg":  # MacOS case
-            jsonArch = "amd64"
-        else:
-            arch = arch.split("-")[1]
-            if arch in ["64bit", "x86_64"]:
-                jsonArch = "amd64"
-            else:
-                exception_msg = f"Cannot parse target, arch = {arch}"
-                logging.exception(exception_msg)
-                raise Exception(exception_msg)
-        self.target = target + "/" + jsonArch
-        self.type = file_type
-
-
-class blackmagicFileParser(FileParser):
-    def parse(self, filename: str) -> None:
-        regex = re.compile(
-            r"^blackmagic-firmware-(\w+)-(\w+)-([0-9.]+(-rc)?|(dev-\w+-\w+))\.(\w+)$"
-        )
-        match = regex.match(filename)
-        if not match:
-            exception_msg = f"Unknown file {filename}"
-            logging.exception(exception_msg)
-            raise Exception(exception_msg)
-        self.target = match.group(1)
-        self.type = match.group(2) + "_" + match.group(6)
-
-
-class vgmFileParser(FileParser):
-    def parse(self, filename: str) -> None:
-        regex = re.compile(r"^vgm-(\w+)-(\w+)-([0-9.]+(-rc)?|(dev-\w+-\w+))\.(\w+)$")
+        regex = re.compile(r"^flipper-z-(\w+)-(\w+)-mntm-([0-9]+()?|(dev-\w+))\.(\w+)$")
         match = regex.match(filename)
         if not match:
             exception_msg = f"Unknown file {filename}"

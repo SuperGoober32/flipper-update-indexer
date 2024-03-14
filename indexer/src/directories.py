@@ -36,7 +36,7 @@ async def latest_request(directory, channel, target, file_type):
     of a specific version
     Args:
         directory: Repository name
-        channel: Channel type (release, rc, dev)
+        channel: Channel type (release, dev)
         target: Operating System (linux, mac, win)
         file_type: File Type
 
@@ -59,13 +59,13 @@ async def latest_request(directory, channel, target, file_type):
     response_class=FileResponse,
     status_code=200,
 )
-async def latest_request(directory, channel, file_name):
+async def file_request(directory, channel, file_name):
     """
     A method for retrieving a file from the repository
     of a specific version
     Args:
         directory: Repository name
-        channel: Channel type (release, rc, dev)
+        channel: Channel type (release, dev)
         file_name: File Name
 
     Returns:

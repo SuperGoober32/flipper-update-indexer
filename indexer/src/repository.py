@@ -5,7 +5,6 @@ import logging
 from .parsers import parse_github_channels
 from .models import *
 from .settings import settings
-from .models import qFlipperFileParser, blackmagicFileParser, vgmFileParser
 
 
 class RepositoryIndex:
@@ -73,8 +72,8 @@ class RepositoryIndex:
 
     def reindex(self):
         """
-        Method for starting reindexing. We get three channels - dev, release,
-        rc from the main repository in the git. We run through all 3 channels,
+        Method for starting reindexing. We get three channels - dev, release
+        from the main repository in the git. We run through all 3 channels,
         each channel has different versions inside. We create models for all
         versions and stuff them with the path to the artifacts.
 
@@ -103,7 +102,7 @@ class RepositoryIndex:
         A method to get a file in the latest version of the
         current directory by its target and type
         Args:
-            channel: Channel type (release, rc, dev)
+            channel: Channel type (release, dev)
             target: Operating System (linux, mac, win)
             file_type: File Type
 
@@ -141,7 +140,7 @@ class RepositoryIndex:
         A method to get a file in the latest version of the
         current directory by its target and type
         Args:
-            channel: Channel type (release, rc, dev)
+            channel: Channel type (release, dev)
             file_name: File Name
 
         Returns:
@@ -157,27 +156,6 @@ indexes = {
         github_repo=settings.firmware_github_repo,
         github_org=settings.github_org,
     ),
-    # "qFlipper": RepositoryIndex(
-    #     directory="qFlipper",
-    #     github_token=settings.qFlipper_github_token,
-    #     github_repo=settings.qFlipper_github_repo,
-    #     github_org=settings.github_org,
-    #     file_parser=qFlipperFileParser,
-    # ),
-    # "blackmagic-firmware": RepositoryIndex(
-    #     directory="blackmagic-firmware",
-    #     github_token=settings.blackmagic_github_token,
-    #     github_repo=settings.blackmagic_github_repo,
-    #     github_org=settings.github_org,
-    #     file_parser=blackmagicFileParser,
-    # ),
-    # "vgm-firmware": RepositoryIndex(
-    #     directory="vgm-firmware",
-    #     github_token=settings.vgm_github_token,
-    #     github_repo=settings.vgm_github_repo,
-    #     github_org=settings.github_org,
-    #     file_parser=vgmFileParser,
-    # ),
 }
 
-raw_file_upload_directories = ["toolchain"]
+raw_file_upload_directories = []

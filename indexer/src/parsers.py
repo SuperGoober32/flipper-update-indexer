@@ -61,7 +61,7 @@ def parse_dev_channel(
     Args:
         channel: Channel model (-> dev)
         directory: Save directory
-        file_parser: The method by which the file piercing will take place (qFlipper, FileParser)
+        file_parser: The method by which the file piercing will take place (FileParser)
 
     Returns:
         New channel with added version
@@ -84,36 +84,12 @@ def parse_release_channel(
     Args:
         channel: Channel model (-> release)
         directory: Save directory
-        file_parser: The method by which the file piercing will take place (qFlipper, FileParser)
+        file_parser: The method by which the file piercing will take place (FileParser)
 
     Returns:
         New channel with added version
     """
     version = indexer_github.get_release_version()
-    if version:
-        version = add_files_to_version(version, file_parser, directory, version.version)
-        channel.add_version(version)
-    return channel
-
-
-def parse_rc_channel(
-    channel: Channel,
-    directory: str,
-    file_parser: FileParser,
-    indexer_github: IndexerGithub,
-) -> Channel:
-    """
-    Method for creating a new version with a file
-    and adding it to the rc channel
-    Args:
-        channel: Channel model (-> release-candidate)
-        directory: Save directory
-        file_parser: The method by which the file piercing will take place (qFlipper, FileParser)
-
-    Returns:
-        New channel with added version
-    """
-    version = indexer_github.get_rc_version()
     if version:
         version = add_files_to_version(version, file_parser, directory, version.version)
         channel.add_version(version)
@@ -127,7 +103,7 @@ def parse_github_channels(
     Method for creating a new index with channels
     Args:
         directory: Save directory
-        file_parser: The method by which the file piercing will take place (qFlipper, FileParser)
+        file_parser: The method by which the file piercing will take place (FileParser)
 
     Returns:
         New index with added channels
@@ -146,9 +122,4 @@ def parse_github_channels(
             indexer_github,
         )
     )
-    # json.add_channel(
-    #     parse_rc_channel(
-    #         copy.deepcopy(release_candidate_channel), directory, file_parser, indexer_github
-    #     )
-    # )
     return json.dict()

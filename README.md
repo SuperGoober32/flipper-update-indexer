@@ -1,17 +1,9 @@
 # Flipper Zero Update Indexer and Uploader
 
-## Start localy
+## Start locally
 ```bash
     INDEXER_FIRMWARE_GITHUB_TOKEN= \
-    INDEXER_QFLIPPER_GITHUB_TOKEN= \
-    INDEXER_GITHUB_ORGANIZATION= \
-    INDEXER_QFLIPPER_GITHUB_REPO= \
-    INDEXER_FIRMWARE_GITHUB_REPO= \
-    INDEXER_BLACKMAGIC_GITHUB_TOKEN= \
-    INDEXER_BLACKMAGIC_GITHUB_REPO= \
     INDEXER_TOKEN= \
-    INDEXER_BASE_URL= \
-    INDEXER_FILES_DIR= \
     make run
 ```
 
@@ -31,7 +23,6 @@ Get latest release
     # format: 127.0.0.1:8000/{directory}/{channel}/{target}/{type}
     # if target contains '/' (slash) replace it by '-' dash symbol
     curl 127.0.0.1:8000/firmware/release/f7/updater_json
-    curl 127.0.0.1:8000/qFlipper/release/windows-amd64/installer
 ```
 
 Trigger reindex
@@ -46,11 +37,4 @@ Upload files
         -F "files=@flipper-z-any-core2_firmware-0.73.1.tgz" \
         -F "files=@flipper-z-f7-full-0.73.1.json" \
         127.0.0.1:8000/firmware/uploadfiles
-```
-
-Upload files without reindex
-```bash
-    curl -L -H "Token: YOUR_TOKEN" \
-        -F "files=@gcc-arm-none-eabi-12.3-arm64-darwin-flipper-24.tar.gz" \
-        127.0.0.1:8000/toolchain/uploadfilesraw
 ```
