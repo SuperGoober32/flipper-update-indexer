@@ -144,7 +144,10 @@ class RepositoryIndex:
         Returns:
             The file path
         """
-        return os.path.join(settings.files_dir, self.directory, channel, file_name)
+        file_path = os.path.join(settings.files_dir, self.directory, channel, file_name)
+        if not os.path.isfile(file_path):
+            raise FileNotFoundError("File not found, try a newer link!")
+        return file_path
 
 
 indexes = {
