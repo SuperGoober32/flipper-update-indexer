@@ -17,7 +17,7 @@ class Settings(BaseModel):
     kubernetes_app: str = None
     kubernetes_container: str = None
     kubernetes_pod: str = None
-    firmware_github_token: str
+    firmware_github_token: str = None
     firmware_github_repo: str
     private_paths: List[str]
 
