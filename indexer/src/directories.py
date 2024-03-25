@@ -54,11 +54,7 @@ async def latest_request(directory, channel, target, file_type):
         return JSONResponse(str(e), status_code=404)
 
 
-@router.get(
-    "/{directory}/{channel}/{file_name}",
-    response_class=FileResponse,
-    status_code=200,
-)
+@router.get("/{directory}/{channel}/{file_name}")
 async def file_request(directory, channel, file_name):
     """
     A method for retrieving a file from the repository
@@ -77,7 +73,11 @@ async def file_request(directory, channel, file_name):
     if len(index.index["channels"]) == 0:
         return JSONResponse("No channels found!", status_code=404)
     try:
-        return index.get_file_path(channel, file_name)
+        return FileResponse(
+            index.get_file_path(channel, file_name),
+            media_type="application/octet-stream",
+            status_code=200,
+        )
     except Exception as e:
         return JSONResponse(str(e), status_code=404)
 
