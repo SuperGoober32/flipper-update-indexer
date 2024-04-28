@@ -3,7 +3,7 @@ import hashlib
 import logging
 from pydantic import BaseModel
 from github import Github, Repository
-from typing import List
+from typing import List, ClassVar
 
 
 class VersionFile(BaseModel):
@@ -142,6 +142,9 @@ class IndexerGithub:
 class FileParser(BaseModel):
     target: str = ""
     type: str = ""
+    regex: ClassVar[re.Pattern] = re.compile(
+        r"^flipper-z-(\w+)-(\w+)-mntm-([0-9]+()?|(dev-\w+))\.(\w+)$"
+    )
 
     def getSHA256(self, filepath: str) -> str:
         with open(filepath, "rb") as file:
@@ -150,8 +153,7 @@ class FileParser(BaseModel):
         return sha256
 
     def parse(self, filename: str) -> None:
-        regex = re.compile(r"^flipper-z-(\w+)-(\w+)-mntm-([0-9]+()?|(dev-\w+))\.(\w+)$")
-        match = regex.match(filename)
+        match = self.regex.match(filename)
         if not match:
             exception_msg = f"Unknown file {filename}"
             logging.exception(exception_msg)
