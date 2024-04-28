@@ -36,8 +36,6 @@ def add_files_to_version(
         # skip .DS_store files
         if cur.startswith("."):
             continue
-        if version.version not in cur:
-            continue
         parsed_file = file_parser()
         try:
             parsed_file.parse(cur)
