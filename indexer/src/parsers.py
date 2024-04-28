@@ -28,7 +28,11 @@ def add_files_to_version(
         logging.exception(exception_msg)
         raise Exception(exception_msg)
 
-    for cur in sorted(os.listdir(directory_path)):
+    latest_version = None
+    for entry in sorted(
+        os.scandir(directory_path), key=lambda e: e.stat().st_mtime, reverse=True
+    ):
+        cur = entry.name
         # skip .DS_store files
         if cur.startswith("."):
             continue
@@ -39,6 +43,13 @@ def add_files_to_version(
             parsed_file.parse(cur)
         except Exception as e:
             logging.exception(e)
+            continue
+        if latest_version is None:
+            match = file_parser.regex.match(cur)
+            latest_version = "mntm-" + match.group(3)
+            if not version.version.startswith("mntm-"):
+                version.version = latest_version.removeprefix("mntm-dev-")
+        elif latest_version not in cur:
             continue
         version.add_file(
             VersionFile(
