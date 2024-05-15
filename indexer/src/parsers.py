@@ -24,9 +24,7 @@ def add_files_to_version(
     directory_path = os.path.join(settings.files_dir, main_dir, сhannel_dir)
 
     if not os.path.isdir(directory_path):
-        exception_msg = f"Directory {directory_path} not found!"
-        logging.exception(exception_msg)
-        raise Exception(exception_msg)
+        os.mkdir(directory_path)
 
     latest_version = None
     for entry in sorted(
