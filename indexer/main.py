@@ -46,6 +46,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://momentum-fw.dev",
+        "https://lab.flipper.net",
         "http://localhost:8000",
         "http://localhost:8080",
     ],
