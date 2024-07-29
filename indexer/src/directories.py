@@ -33,34 +33,6 @@ async def directory_request(directory):
         return JSONResponse(f"{directory} not found!", status_code=404)
     return indexes.get(directory).index
 
-
-@router.get("/{directory}/{branch}")
-async def repository_branch_request(directory, branch):
-    """
-    A method for retrieving the list of files from a specific branch
-    Made for support of `ufbt update --index-url {base_url}/firmware --branch {branch}`
-    Args:
-        directory: Repository name
-        branch: Branch name
-
-    Returns:
-        HTML links in format that ufbt understands
-    """
-    if directory not in indexes:
-        return JSONResponse(f"{directory} not found!", status_code=404)
-    index = indexes.get(directory)
-    if len(index.index["channels"]) == 0:
-        return JSONResponse("No channels found!", status_code=404)
-    try:
-        branch_files = index.get_branch_file_names(branch)
-        response = "\n".join(f'<a href="{file}"></a>' for file in branch_files)
-        return HTMLResponse(
-            response,
-            status_code=200,
-        )
-    except Exception as e:
-        return JSONResponse(str(e), status_code=404)
-
 @router.get(
     "/{directory}/{channel}/{target}/{file_type}",
     response_class=RedirectResponse,
@@ -137,3 +109,31 @@ async def reindex_request(directory):
         except Exception as e:
             logging.exception(e)
             return JSONResponse("Reindexing is failed!", status_code=500)
+
+
+@router.get("/{directory}/{branch}")
+async def repository_branch_request(directory, branch):
+    """
+    A method for retrieving the list of files from a specific branch
+    Made for support of `ufbt update --index-url {base_url}/firmware --branch {branch}`
+    Args:
+        directory: Repository name
+        branch: Branch name
+
+    Returns:
+        HTML links in format that ufbt understands
+    """
+    if directory not in indexes:
+        return JSONResponse(f"{directory} not found!", status_code=404)
+    index = indexes.get(directory)
+    if len(index.index["channels"]) == 0:
+        return JSONResponse("No channels found!", status_code=404)
+    try:
+        branch_files = index.get_branch_file_names(branch)
+        response = "\n".join(f'<a href="{file}"></a>' for file in branch_files)
+        return HTMLResponse(
+            response,
+            status_code=200,
+        )
+    except Exception as e:
+        return JSONResponse(str(e), status_code=404)
