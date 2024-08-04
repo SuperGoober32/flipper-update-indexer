@@ -33,6 +33,7 @@ async def directory_request(directory):
         return JSONResponse(f"{directory} not found!", status_code=404)
     return indexes.get(directory).index
 
+
 @router.get(
     "/{directory}/{channel}/{target}/{file_type}",
     response_class=RedirectResponse,
