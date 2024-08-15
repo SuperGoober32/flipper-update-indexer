@@ -147,9 +147,9 @@ def parse_github_channels(
         if not os.path.isdir(branch_dir) or len(os.listdir(branch_dir)) <= 1:
             continue
         channel = copy.deepcopy(branch_channel)
-        channel.id += branch
-        channel.title += branch
-        channel.description += branch
+        channel.id = channel.id.format(branch=branch)
+        channel.title = channel.title.format(branch=branch)
+        channel.description = channel.description.format(branch=branch)
         json.add_channel(
             parse_dev_channel(channel, directory, file_parser, indexer_github, branch)
         )

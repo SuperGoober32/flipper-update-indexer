@@ -12,7 +12,7 @@ release_channel = Channel(
     description="Less frequent, more stable releases",
 )
 branch_channel = Channel(
-    id="branch-",
-    title="Unstable Branch ",
-    description="Work in progress, unstable branch ",
+    id="wip-{branch}",
+    title="Unstable Branch '{branch}'",
+    description="Work in progress, unstable branch '{branch}'",
 )
