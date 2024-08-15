@@ -43,8 +43,10 @@ def add_files_to_version(
         if latest_version is None:
             match = file_parser.regex.match(cur)
             latest_version = "mntm-" + match.group(3)
+            # Is not a release number
             if not version.version.startswith("mntm-"):
-                version.version = latest_version.removeprefix("mntm-dev-")
+                # Get commit sha at the end
+                version.version = latest_version.split("-")[-1]
                 if version.version in version.changelog:
                     pos = version.changelog.find(version.version)
                     pos = version.changelog.rfind("\n", 0, pos)

@@ -155,7 +155,7 @@ class FileParser(BaseModel):
     target: str = ""
     type: str = ""
     regex: ClassVar[re.Pattern] = re.compile(
-        r"^flipper-z-(\w+)-(\w+)-mntm-([0-9]+()?|(dev-\w+))\.(\w+)$"
+        r"^flipper-z-(\w+)-(\w+)-mntm-([A-Za-z0-9_.-]+)\.(\w+)$"
     )
 
     def getSHA256(self, filepath: str) -> str:
@@ -171,4 +171,4 @@ class FileParser(BaseModel):
             logging.exception(exception_msg)
             raise Exception(exception_msg)
         self.target = match.group(1)
-        self.type = match.group(2) + "_" + match.group(6)
+        self.type = match.group(2) + "_" + match.group(4)
