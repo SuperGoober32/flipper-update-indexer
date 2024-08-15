@@ -58,23 +58,19 @@ def move_files_for_indexed(dest_dir: str, source_dir: str, version_token: str) -
                 do_cleanup = True
     else:
         do_cleanup = True
-    dest_path = pathlib.Path(dest_dir)
-    dest_path.mkdir(parents=True, exist_ok=True)
+    pathlib.Path(dest_dir).mkdir(parents=True, exist_ok=True)
     if do_cleanup:
-        if dest_path.name == "dev":
-            files_per_build = len(os.listdir(source_dir))
-            builds_to_keep = 20
-            prev_files = [
-                entry.path
-                for entry in sorted(
-                    os.scandir(dest_dir), key=lambda e: e.stat().st_mtime, reverse=True
-                )
-            ]
-            cleanup_files = prev_files[files_per_build * builds_to_keep :]
-            for cleanup_file in cleanup_files:
-                os.remove(cleanup_file)
-        else:
-            cleanup_dir(dest_dir)
+        files_per_build = len(os.listdir(source_dir))
+        builds_to_keep = 20
+        prev_files = [
+            entry.path
+            for entry in sorted(
+                os.scandir(dest_dir), key=lambda e: e.stat().st_mtime, reverse=True
+            )
+        ]
+        cleanup_files = prev_files[files_per_build * builds_to_keep :]
+        for cleanup_file in cleanup_files:
+            os.remove(cleanup_file)
         if version_token:
             with open(token_file_path, "w") as token_file:
                 token_file.write(version_token)
