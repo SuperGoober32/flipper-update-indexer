@@ -67,6 +67,7 @@ def parse_dev_channel(
     directory: str,
     file_parser: FileParser,
     indexer_github: IndexerGithub,
+    branch: str,
 ) -> Channel:
     """
     Method for creating a new version with a file
@@ -79,8 +80,8 @@ def parse_dev_channel(
     Returns:
         New channel with added version
     """
-    version = indexer_github.get_dev_version()
-    version = add_files_to_version(version, file_parser, directory, "dev")
+    version = indexer_github.get_dev_version(branch)
+    version = add_files_to_version(version, file_parser, directory, branch)
     channel.add_version(version)
     return channel
 
@@ -124,7 +125,11 @@ def parse_github_channels(
     json = Index()
     json.add_channel(
         parse_dev_channel(
-            copy.deepcopy(development_channel), directory, file_parser, indexer_github
+            copy.deepcopy(development_channel),
+            directory,
+            file_parser,
+            indexer_github,
+            "dev",
         )
     )
     json.add_channel(
@@ -135,4 +140,15 @@ def parse_github_channels(
             indexer_github,
         )
     )
+    for branch in indexer_github.get_unstable_branch_names():
+        branch_dir = os.path.join(settings.files_dir, directory, branch)
+        if not os.path.isdir(branch_dir) or len(os.listdir(branch_dir)) <= 1:
+            continue
+        channel = copy.deepcopy(branch_channel)
+        channel.id += branch
+        channel.title += branch
+        channel.description += branch
+        json.add_channel(
+            parse_dev_channel(channel, directory, file_parser, indexer_github, branch)
+        )
     return json.dict()

@@ -84,6 +84,17 @@ class IndexerGithub:
         self.__get_releases()
         self.__get_branches()
 
+    def get_unstable_branch_names(self) -> List[str]:
+        return [
+            branch
+            for branch in self.__branches
+            if branch
+            not in (
+                "dev",
+                "release",
+            )
+        ]
+
     """
         We need all stuff above (except login) for the delete_unlinked_directories function in repository.py
     """
@@ -97,11 +108,11 @@ class IndexerGithub:
     def is_tag_exist(self, tag: str) -> bool:
         return tag in self.__tags
 
-    def get_dev_version(self) -> Version:
+    def get_dev_version(self, branch: str) -> Version:
         try:
-            commits = self.__repo.get_commits()
+            commits = self.__repo.get_commits(branch)
             if commits.totalCount == 0:
-                exception_msg = f"No commits found in master branch!"
+                exception_msg = f"No commits found in {branch} branch!"
                 logging.exception(exception_msg)
                 raise Exception(exception_msg)
             last_commit = commits[0]
