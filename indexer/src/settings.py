@@ -1,6 +1,6 @@
 import os
 from pydantic import BaseModel
-from typing import List
+from typing import List, Union
 import pathlib
 
 
@@ -11,13 +11,13 @@ class Settings(BaseModel):
     base_url: str
     token: str
     github_org: str
-    gelf_host: str | None
-    gelf_port: str | None
-    kubernetes_namespace: str | None
-    kubernetes_app: str | None
-    kubernetes_container: str | None
-    kubernetes_pod: str | None
-    firmware_github_token: str | None
+    gelf_host: Union[str, None]
+    gelf_port: Union[str, None]
+    kubernetes_namespace: Union[str, None]
+    kubernetes_app: Union[str, None]
+    kubernetes_container: Union[str, None]
+    kubernetes_pod: Union[str, None]
+    firmware_github_token: Union[str, None]
     firmware_github_repo: str
     private_paths: List[str]
 
