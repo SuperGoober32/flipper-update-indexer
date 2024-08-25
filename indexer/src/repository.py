@@ -2,7 +2,7 @@ import os
 import shutil
 import logging
 
-from .parsers import parse_github_channels
+from .parsers import parse_github_channels, parse_asset_packs
 from .models import *
 from .settings import settings
 
@@ -150,8 +150,7 @@ class RepositoryIndex:
 
     def get_file_path(self: str, channel: str, file_name: str) -> str:
         """
-        A method to get a file in the latest version of the
-        current directory by its target and type
+        A method to get a specific file by name in the specified channel
         Args:
             channel: Channel type (release, dev)
             file_name: File Name
@@ -165,12 +164,82 @@ class RepositoryIndex:
         return file_path
 
 
+class PacksCatalog:
+    index: dict
+
+    def __init__(
+        self,
+        directory: str,
+        pack_parser: PackParser = PackParser,
+    ):
+        self.index = Catalog().dict()
+        self.directory = directory
+        self.pack_parser = pack_parser
+
+    def delete_empty_directories(self):
+        """
+        A method for cleaning directories that are empty
+        Returns:
+            Nothing
+        """
+        main_dir = os.path.join(settings.files_dir, self.directory)
+        for cur in os.listdir(main_dir):
+            cur_dir = os.path.join(main_dir, cur)
+            if cur.startswith(".") or not os.path.isdir(cur_dir):
+                continue
+            dir_content = os.listdir(cur_dir)
+            if len(dir_content) > 0:
+                continue
+            shutil.rmtree(cur_dir)
+            logging.info(f"Deleting {cur_dir}")
+
+    def reindex(self):
+        """
+        Method for starting reindexing. We get available packs from disk
+        and parse them for metadata, previews and artifacts.
+
+        At the end of reindexing, all unnecessary empty directories are cleared
+
+        Returns:
+            Nothing
+        """
+        try:
+            self.index = parse_asset_packs(self.directory, self.pack_parser)
+            logging.info(f"{self.directory} reindex OK")
+            self.delete_empty_directories()
+        except Exception as e:
+            logging.error(f"{self.directory} reindex failed")
+            logging.exception(e)
+            raise e
+
+    def get_file_path(self: str, pack: str, file_type: str, file_name: str) -> str:
+        """
+        A method to get a specific file by type and name in the specified pack
+        Args:
+            pack: Pack id
+            file_type: File Type (download, preview)
+            file_name: File Name
+
+        Returns:
+            The file path
+        """
+        file_path = os.path.join(
+            settings.files_dir, self.directory, pack, file_type, file_name
+        )
+        if file_type not in ("download", "preview") or not os.path.isfile(file_path):
+            raise FileNotFoundError("File not found, try a newer link!")
+        return file_path
+
+
 indexes = {
     "firmware": RepositoryIndex(
         directory="firmware",
         github_token=settings.firmware_github_token,
         github_repo=settings.firmware_github_repo,
         github_org=settings.github_org,
+    ),
+    "asset-packs": PacksCatalog(
+        directory="asset-packs",
     ),
 }
 

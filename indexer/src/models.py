@@ -1,9 +1,14 @@
 import re
+import os
+import json
 import hashlib
 import logging
+import pathlib
 from pydantic import BaseModel
 from github import Github, Repository
 from typing import List, ClassVar
+
+from .settings import settings
 
 
 class VersionFile(BaseModel):
@@ -38,6 +43,44 @@ class Index(BaseModel):
 
     def add_channel(self, channel: Channel) -> None:
         self.channels.append(channel)
+
+
+class PackFile(BaseModel):
+    url: str
+    type: str
+    sha256: str
+
+
+class PackStats(BaseModel):
+    packs: int = 0
+    anims: int = 0
+    icons: int = 0
+    passport: List[str] = []
+    fonts: List[str] = []
+
+
+class Pack(BaseModel):
+    id: str
+    name: str
+    author: str
+    source_url: str
+    description: str
+    files: List[PackFile] = []
+    preview_urls: List[str] = []
+    stats: PackStats = PackStats()
+
+    def add_file(self, file: PackFile) -> None:
+        self.files.append(file)
+
+    def add_preview_url(self, preview_url: str) -> None:
+        self.preview_urls.append(preview_url)
+
+
+class Catalog(BaseModel):
+    packs: List[Pack] = []
+
+    def add_pack(self, pack: Pack) -> None:
+        self.packs.append(pack)
 
 
 class IndexerGithub:
@@ -172,3 +215,111 @@ class FileParser(BaseModel):
             raise Exception(exception_msg)
         self.target = match.group(1)
         self.type = match.group(2) + "_" + match.group(4)
+
+
+class PackParser(BaseModel):
+    anim_regex: ClassVar[re.Pattern] = re.compile(rb"^Name: ", re.MULTILINE)
+
+    def getSHA256(self, filepath: str) -> str:
+        with open(filepath, "rb") as file:
+            file_bytes = file.read()
+            sha256 = hashlib.sha256(file_bytes).hexdigest()
+        return sha256
+
+    def parse(self, packpath: str) -> Pack:
+        pack_set = pathlib.Path(packpath)
+
+        with open(pack_set / "meta.json", "r") as f:
+            meta: dict = json.load(f)
+
+        pack = Pack(
+            id=pack_set.name,
+            name=meta.get("name", pack_set.name.title()),
+            author=meta.get("author", "N/A"),
+            source_url=meta.get("source_url", ""),
+            description=meta.get("description", ""),
+        )
+
+        for pack_entry in (pack_set / "source").iterdir():
+            if not pack_entry.is_dir():
+                continue
+            anims = 0
+            icons = 0
+            passport = set()
+            fonts = set()
+            if (pack_entry / "Anims/manifest.txt").is_file():
+                manifest = (pack_entry / "Anims/manifest.txt").read_bytes()
+                anims = sum(1 for _ in self.anim_regex.finditer(manifest))
+            if (pack_entry / "Icons").is_dir():
+                for icon_set in (pack_entry / "Icons").iterdir():
+                    if icon_set.name.startswith(".") or not icon_set.is_dir():
+                        continue
+                    for icon in icon_set.iterdir():
+                        if icon.name.startswith("."):
+                            continue
+                        if icon.is_dir() and (
+                            (icon / "frame_rate").is_file() or (icon / "meta").is_file()
+                        ):
+                            icons += 1
+                        elif icon.is_file() and icon.suffix in (".png", ".bmx"):
+                            if icon_set.name == "Passport":
+                                parts = icon.name.split("_")
+                                if len(parts) < 3:  # passport_128x64
+                                    passport.add("Background")
+                                else:
+                                    passport.add(parts[1].title())
+                            else:
+                                icons += 1
+            if (pack_entry / "Fonts").is_dir():
+                for font in (pack_entry / "Fonts").iterdir():
+                    if font.name.startswith(".") or not font.is_file():
+                        continue
+                    if font.suffix in (".c", ".u8f"):
+                        fonts.add(font.stem)
+            if anims or icons or passport or fonts:
+                pack.stats.packs += 1
+                pack.stats.anims += anims
+                pack.stats.icons += icons
+                pack.stats.passport = sorted(passport.union(pack.stats.passport))
+                pack.stats.fonts = sorted(fonts.union(pack.stats.fonts))
+            else:
+                logging.warn(
+                    f"Pack {pack_entry.name!r} in set {pack_set.name!r} is empty"
+                )
+
+        for file in (pack_set / "download").iterdir():
+            if file.name.startswith(".") or not file.is_file():
+                continue
+            if file.name.endswith((".zip", ".tar.gz")):
+                pack.add_file(
+                    PackFile(
+                        url=os.path.join(
+                            settings.base_url, file.relative_to(settings.files_dir)
+                        ),
+                        type="pack_"
+                        + file.suffix.removeprefix(".").replace("gz", "targz"),
+                        sha256=self.getSHA256(file),
+                    )
+                )
+        if len(pack.files) != 2:
+            logging.warn(
+                f"Pack {pack_set.name!r} has {len(pack.files)} file{'' if len(pack.files) == 1 else 's'}, "
+                "should be 2 files (.zip and .tar.gz)"
+            )
+
+        for preview in sorted((pack_set / "preview").iterdir()):
+            if preview.name.startswith(".") or not preview.is_file():
+                continue
+            if preview.suffix in (".png", ".jpg", ".gif"):
+                pack.add_preview_url(
+                    os.path.join(
+                        settings.base_url, preview.relative_to(settings.files_dir)
+                    )
+                )
+        if len(pack.preview_urls) not in range(1, 8):
+            logging.warn(
+                f"Pack {pack_set.name!r} has {len(pack.preview_urls)} previews, "
+                "should be between 1 and 8"
+            )
+
+        return pack

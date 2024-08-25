@@ -154,3 +154,37 @@ def parse_github_channels(
             parse_dev_channel(channel, directory, file_parser, indexer_github, branch)
         )
     return json.dict()
+
+
+def parse_asset_packs(directory: str, pack_parser: PackParser) -> dict:
+    """
+    Method for creating a new catalog with packs
+    Args:
+        directory: Save directory
+        pack_parser: The method by which the pack parsing will take place (PackParser)
+
+    Returns:
+        New catalog with added packs
+    """
+    json = Catalog()
+    directory_path = os.path.join(settings.files_dir, directory)
+
+    if not os.path.isdir(directory_path):
+        exception_msg = f"Directory {directory_path} not found!"
+        logging.exception(exception_msg)
+        raise Exception(exception_msg)
+
+    for cur in sorted(os.listdir(directory_path)):
+        pack_path = os.path.join(directory_path, cur)
+        # skip .DS_store files
+        if cur.startswith(".") or not os.path.isdir(pack_path):
+            continue
+        parsed_pack = pack_parser()
+        try:
+            pack = parsed_pack.parse(pack_path)
+        except Exception as e:
+            logging.exception(e)
+            continue
+        json.add_pack(pack)
+
+    return json.dict()
