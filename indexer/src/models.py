@@ -57,6 +57,7 @@ class PackStats(BaseModel):
     icons: int = 0
     passport: List[str] = []
     fonts: List[str] = []
+    folders: List[str] = []
 
 
 class Pack(BaseModel):
@@ -282,6 +283,7 @@ class PackParser(BaseModel):
                 pack.stats.icons += icons
                 pack.stats.passport = sorted(passport.union(pack.stats.passport))
                 pack.stats.fonts = sorted(fonts.union(pack.stats.fonts))
+                pack.stats.folders.append(pack_entry.name)
             else:
                 logging.warn(
                     f"Pack {pack_entry.name!r} in set {pack_set.name!r} is empty"
