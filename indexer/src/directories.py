@@ -83,7 +83,7 @@ def setup_routes(prefix: str, index):
     elif isinstance(index, PacksCatalog):
 
         @router.get(prefix + "/{pack}/{file_type}/{file_name}")
-        async def pack_file_request(pack, file_type, file_name):
+        async def pack_file_request(pack, file_type, file_name, sha256: str = None):
             """
             A method for retrieving a file from a specific pack
             Args:
@@ -98,7 +98,7 @@ def setup_routes(prefix: str, index):
                 return JSONResponse("No packs found!", status_code=404)
             try:
                 return FileResponse(
-                    index.get_file_path(pack, file_type, file_name),
+                    index.get_file_path(pack, file_type, file_name, sha256),
                     media_type="application/octet-stream",
                     status_code=200,
                 )

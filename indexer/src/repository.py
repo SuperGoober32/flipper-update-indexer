@@ -212,7 +212,9 @@ class PacksCatalog:
             logging.exception(e)
             raise e
 
-    def get_file_path(self: str, pack: str, file_type: str, file_name: str) -> str:
+    def get_file_path(
+        self: str, pack: str, file_type: str, file_name: str, sha256: str
+    ) -> str:
         """
         A method to get a specific file by type and name in the specified pack
         Args:
@@ -228,6 +230,19 @@ class PacksCatalog:
         )
         if file_type not in ("download", "preview") or not os.path.isfile(file_path):
             raise FileNotFoundError("File not found, try a newer link!")
+        if sha256 and file_type == "download":
+            matches = False
+            for pack_i in self.index["packs"]:
+                if pack_i["id"] != pack:
+                    continue
+                for file_i in pack_i["files"]:
+                    if not file_i["url"].endswith(file_name):
+                        continue
+                    matches = file_i["sha256"] == sha256
+                    break
+                break
+            if not matches:
+                raise FileNotFoundError("File not found, try a newer link!")
         return file_path
 
 
