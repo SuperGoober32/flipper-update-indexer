@@ -188,7 +188,7 @@ class IndexerGithub:
             last_release = next(filter(lambda c: not c.prerelease, releases))
             return Version(
                 version=last_release.title,
-                changelog=last_release.body.split("## 🚀 Changelog", 1)[-1].strip(),
+                changelog=last_release.body.split("## 🚀 Changelog", 1)[-1].lstrip(),
                 timestamp=int(last_release.created_at.timestamp()),
             )
         except StopIteration:
