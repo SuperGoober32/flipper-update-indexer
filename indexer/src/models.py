@@ -265,11 +265,16 @@ class PackParser(BaseModel):
                             icons += 1
                         elif icon.is_file() and icon.suffix in (".png", ".bmx"):
                             if icon_set.name == "Passport":
-                                parts = icon.name.split("_")
-                                if len(parts) < 3:  # passport_128x64
+                                if icon.stem == "passport_128x64":
                                     passport.add("Background")
+                                elif icon.stem in (
+                                    "passport_bad_46x49",
+                                    "passport_happy_46x49",
+                                    "passport_okay_46x49",
+                                ):
+                                    passport.add(icon.stem.split("_")[1].title())
                                 else:
-                                    passport.add(parts[1].title())
+                                    icons += 1
                             else:
                                 icons += 1
             if (pack_entry / "Fonts").is_dir():
