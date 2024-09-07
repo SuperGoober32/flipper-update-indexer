@@ -219,7 +219,7 @@ class FileParser(BaseModel):
 
 
 class PackParser(BaseModel):
-    anim_regex: ClassVar[re.Pattern] = re.compile(rb"^Name: ", re.MULTILINE)
+    anim_regex: ClassVar[re.Pattern] = re.compile(rb"^Name: (.*)", re.MULTILINE)
 
     def getSHA256(self, filepath: str) -> str:
         with open(filepath, "rb") as file:
@@ -241,16 +241,17 @@ class PackParser(BaseModel):
             description=meta.get("description", ""),
         )
 
+        anims_names = set()
         for pack_entry in (pack_set / "source").iterdir():
             if not pack_entry.is_dir():
                 continue
-            anims = 0
+            anims = set()
             icons = 0
             passport = set()
             fonts = set()
             if (pack_entry / "Anims/manifest.txt").is_file():
                 manifest = (pack_entry / "Anims/manifest.txt").read_bytes()
-                anims = sum(1 for _ in self.anim_regex.finditer(manifest))
+                anims.update(m.group(1) for m in self.anim_regex.finditer(manifest))
             if (pack_entry / "Icons").is_dir():
                 for icon_set in (pack_entry / "Icons").iterdir():
                     if icon_set.name.startswith(".") or not icon_set.is_dir():
@@ -279,7 +280,7 @@ class PackParser(BaseModel):
                         fonts.add(font.stem)
             if anims or icons or passport or fonts:
                 pack.stats.packs += 1
-                pack.stats.anims += anims
+                anims_names.update(anims)
                 pack.stats.icons += icons
                 pack.stats.passport = sorted(passport.union(pack.stats.passport))
                 pack.stats.fonts = sorted(fonts.union(pack.stats.fonts))
@@ -288,6 +289,7 @@ class PackParser(BaseModel):
                 logging.warn(
                     f"Pack {pack_entry.name!r} in set {pack_set.name!r} is empty"
                 )
+        pack.stats.anims = len(anims_names)
 
         for file in (pack_set / "download").iterdir():
             if file.name.startswith(".") or not file.is_file():
