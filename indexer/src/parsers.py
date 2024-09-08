@@ -1,6 +1,7 @@
 import os
 import logging
 import copy
+import subprocess
 
 from .models import *
 from .channels import *
@@ -173,6 +174,10 @@ def parse_asset_packs(directory: str, pack_parser: PackParser) -> dict:
         exception_msg = f"Directory {directory_path} not found!"
         logging.exception(exception_msg)
         raise Exception(exception_msg)
+
+    # Update git submodule
+    subprocess.check_call(["git", "fetch"], cwd=directory_path)
+    subprocess.check_call(["git", "checkout", "origin/dev"], cwd=directory_path)
 
     for cur in sorted(os.listdir(directory_path)):
         pack_path = os.path.join(directory_path, cur)

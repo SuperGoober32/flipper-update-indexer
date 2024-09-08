@@ -1,3 +1,4 @@
 [submodule "files/asset-packs"]
 	path = files/asset-packs
 	url = https://github.com/Next-Flip/Asset-Packs.git
+	ignore = all
