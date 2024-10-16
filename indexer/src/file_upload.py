@@ -21,6 +21,7 @@ TOKEN_FILENAME = ".version_id"
 
 
 def is_directory_reindex_needed(branch: str) -> bool:
+    return True
     return bool(__reindex_regexp__.match(branch))
 
 
