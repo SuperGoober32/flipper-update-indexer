@@ -1,9 +1,11 @@
+import os
 import logging
 import asyncio
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, FileResponse
 
 from .repository import indexes, RepositoryIndex, PacksCatalog
+from .settings import settings
 
 
 router = APIRouter()
@@ -123,30 +125,24 @@ def setup_routes(prefix: str, index):
                 logging.exception(e)
                 return JSONResponse("Reindexing is failed!", status_code=500)
 
-    # if isinstance(index, RepositoryIndex):
+    if isinstance(index, RepositoryIndex):
 
-    #     @router.get(prefix + "/{branch}")
-    #     async def repository_branch_request(branch):
-    #         """
-    #         A method for retrieving the list of files from a specific branch
-    #         Made for support of `ufbt update --index-url {base_url}/firmware --branch {branch}`
-    #         Args:
-    #             branch: Branch name
+        @router.get(prefix + "/{branch}")
+        async def repository_branch_request(branch):
+            """
+            A method for retrieving the list of files from a specific branch
+            Made for support of `ufbt update --index-url {base_url}/firmware --branch {branch}`
+            Args:
+                branch: Branch name
 
-    #         Returns:
-    #             HTML links in format that ufbt understands
-    #         """
-    #         if len(index.index["channels"]) == 0:
-    #             return JSONResponse("No channels found!", status_code=404)
-    #         try:
-    #             branch_files = index.get_branch_file_names(branch)
-    #             response = "\n".join(f'<a href="{file}"></a>' for file in branch_files)
-    #             return HTMLResponse(
-    #                 response,
-    #                 status_code=200,
-    #             )
-    #         except Exception as e:
-    #             return JSONResponse(str(e), status_code=404)
+            Returns:
+                Redirect to directory listing
+            """
+            if len(index.index["channels"]) == 0:
+                return JSONResponse("No channels found!", status_code=404)
+            return RedirectResponse(
+                os.path.join(settings.base_url, prefix, branch), status_code=303
+            )
 
 
 for directory, index in indexes.items():
