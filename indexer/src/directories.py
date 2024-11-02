@@ -125,24 +125,24 @@ def setup_routes(prefix: str, index):
                 logging.exception(e)
                 return JSONResponse("Reindexing is failed!", status_code=500)
 
-    if isinstance(index, RepositoryIndex):
+    # if isinstance(index, RepositoryIndex):
 
-        @router.get(prefix + "/{branch}")
-        async def repository_branch_request(branch):
-            """
-            A method for retrieving the list of files from a specific branch
-            Made for support of `ufbt update --index-url {base_url}/firmware --branch {branch}`
-            Args:
-                branch: Branch name
+    #     @router.get(prefix + "/{branch}")
+    #     async def repository_branch_request(branch):
+    #         """
+    #         A method for retrieving the list of files from a specific branch
+    #         Made for support of `ufbt update --index-url {base_url}/firmware --branch {branch}`
+    #         Args:
+    #             branch: Branch name
 
-            Returns:
-                Redirect to directory listing
-            """
-            if len(index.index["channels"]) == 0:
-                return JSONResponse("No channels found!", status_code=404)
-            return RedirectResponse(
-                os.path.join(settings.base_url + prefix, branch), status_code=303
-            )
+    #         Returns:
+    #             Redirect to directory listing
+    #         """
+    #         if len(index.index["channels"]) == 0:
+    #             return JSONResponse("No channels found!", status_code=404)
+    #         return RedirectResponse(
+    #             os.path.join(settings.base_url + prefix, branch), status_code=303
+    #         )
 
 
 for directory, index in indexes.items():
