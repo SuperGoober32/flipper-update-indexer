@@ -141,7 +141,7 @@ def setup_routes(prefix: str, index):
             if len(index.index["channels"]) == 0:
                 return JSONResponse("No channels found!", status_code=404)
             return RedirectResponse(
-                os.path.join(settings.base_url, prefix, branch), status_code=303
+                os.path.join(settings.base_url + prefix, branch), status_code=303
             )
 
 
