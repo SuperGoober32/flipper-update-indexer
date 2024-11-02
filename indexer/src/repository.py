@@ -95,20 +95,20 @@ class RepositoryIndex:
             logging.exception(e)
             raise e
 
-    def get_branch_file_names(self: str, branch: str) -> list[str]:
-        """
-        A method to get a list of file names in the specified branch
-        Args:
-            branch: Branch name
+    # def get_branch_file_names(self: str, branch: str) -> list[str]:
+    #     """
+    #     A method to get a list of file names in the specified branch
+    #     Args:
+    #         branch: Branch name
 
-        Returns:
-            The list of file names
-        """
-        branch_path = os.path.join(settings.files_dir, self.directory, branch)
-        if not os.path.isdir(branch_path):
-            raise FileNotFoundError("Branch not found!")
-        files = os.listdir(branch_path)
-        return filter(lambda file: not file.startswith("."), files)
+    #     Returns:
+    #         The list of file names
+    #     """
+    #     branch_path = os.path.join(settings.files_dir, self.directory, branch)
+    #     if not os.path.isdir(branch_path):
+    #         raise FileNotFoundError("Branch not found!")
+    #     files = os.listdir(branch_path)
+    #     return filter(lambda file: not file.startswith("."), files)
 
     def get_file_from_latest_version(
         self: str, channel: str, target: str, file_type: str
@@ -148,20 +148,20 @@ class RepositoryIndex:
             logging.exception(e)
             raise e
 
-    def get_file_path(self: str, channel: str, file_name: str) -> str:
-        """
-        A method to get a specific file by name in the specified channel
-        Args:
-            channel: Channel type (release, dev)
-            file_name: File Name
+    # def get_file_path(self: str, channel: str, file_name: str) -> str:
+    #     """
+    #     A method to get a specific file by name in the specified channel
+    #     Args:
+    #         channel: Channel type (release, dev)
+    #         file_name: File Name
 
-        Returns:
-            The file path
-        """
-        file_path = os.path.join(settings.files_dir, self.directory, channel, file_name)
-        if not os.path.isfile(file_path):
-            raise FileNotFoundError("File not found, try a newer link!")
-        return file_path
+    #     Returns:
+    #         The file path
+    #     """
+    #     file_path = os.path.join(settings.files_dir, self.directory, channel, file_name)
+    #     if not os.path.isfile(file_path):
+    #         raise FileNotFoundError("File not found, try a newer link!")
+    #     return file_path
 
 
 class PacksCatalog:
@@ -212,38 +212,38 @@ class PacksCatalog:
             logging.exception(e)
             raise e
 
-    def get_file_path(
-        self: str, pack: str, file_type: str, file_name: str, sha256: str
-    ) -> str:
-        """
-        A method to get a specific file by type and name in the specified pack
-        Args:
-            pack: Pack id
-            file_type: File Type (download, preview)
-            file_name: File Name
+    # def get_file_path(
+    #     self: str, pack: str, file_type: str, file_name: str, sha256: str
+    # ) -> str:
+    #     """
+    #     A method to get a specific file by type and name in the specified pack
+    #     Args:
+    #         pack: Pack id
+    #         file_type: File Type (download, preview)
+    #         file_name: File Name
 
-        Returns:
-            The file path
-        """
-        file_path = os.path.join(
-            settings.files_dir, self.directory, pack, file_type, file_name
-        )
-        if file_type not in ("download", "preview") or not os.path.isfile(file_path):
-            raise FileNotFoundError("File not found, try a newer link!")
-        if sha256 and file_type == "download":
-            matches = False
-            for pack_i in self.index["packs"]:
-                if pack_i["id"] != pack:
-                    continue
-                for file_i in pack_i["files"]:
-                    if not file_i["url"].endswith(file_name):
-                        continue
-                    matches = file_i["sha256"] == sha256
-                    break
-                break
-            if not matches:
-                raise FileNotFoundError("File not found, try a newer link!")
-        return file_path
+    #     Returns:
+    #         The file path
+    #     """
+    #     file_path = os.path.join(
+    #         settings.files_dir, self.directory, pack, file_type, file_name
+    #     )
+    #     if file_type not in ("download", "preview") or not os.path.isfile(file_path):
+    #         raise FileNotFoundError("File not found, try a newer link!")
+    #     if sha256 and file_type == "download":
+    #         matches = False
+    #         for pack_i in self.index["packs"]:
+    #             if pack_i["id"] != pack:
+    #                 continue
+    #             for file_i in pack_i["files"]:
+    #                 if not file_i["url"].endswith(file_name):
+    #                     continue
+    #                 matches = file_i["sha256"] == sha256
+    #                 break
+    #             break
+    #         if not matches:
+    #             raise FileNotFoundError("File not found, try a newer link!")
+    #     return file_path
 
 
 indexes = {

@@ -58,52 +58,52 @@ def setup_routes(prefix: str, index):
             except Exception as e:
                 return JSONResponse(str(e), status_code=404)
 
-        @router.get(prefix + "/{channel}/{file_name}")
-        async def repository_file_request(channel, file_name):
-            """
-            A method for retrieving a file from a specific version
-            Args:
-                channel: Channel type (release, dev)
-                file_name: File Name
+    #     @router.get(prefix + "/{channel}/{file_name}")
+    #     async def repository_file_request(channel, file_name):
+    #         """
+    #         A method for retrieving a file from a specific version
+    #         Args:
+    #             channel: Channel type (release, dev)
+    #             file_name: File Name
 
-            Returns:
-                Artifact file
-            """
-            if len(index.index["channels"]) == 0:
-                return JSONResponse("No channels found!", status_code=404)
-            try:
-                return FileResponse(
-                    index.get_file_path(channel, file_name),
-                    media_type="application/octet-stream",
-                    status_code=200,
-                )
-            except Exception as e:
-                return JSONResponse(str(e), status_code=404)
+    #         Returns:
+    #             Artifact file
+    #         """
+    #         if len(index.index["channels"]) == 0:
+    #             return JSONResponse("No channels found!", status_code=404)
+    #         try:
+    #             return FileResponse(
+    #                 index.get_file_path(channel, file_name),
+    #                 media_type="application/octet-stream",
+    #                 status_code=200,
+    #             )
+    #         except Exception as e:
+    #             return JSONResponse(str(e), status_code=404)
 
-    elif isinstance(index, PacksCatalog):
+    # elif isinstance(index, PacksCatalog):
 
-        @router.get(prefix + "/{pack}/{file_type}/{file_name}")
-        async def pack_file_request(pack, file_type, file_name, sha256: str = None):
-            """
-            A method for retrieving a file from a specific pack
-            Args:
-                pack: Pack id
-                file_type: File Type (download, preview)
-                file_name: File Name
+    #     @router.get(prefix + "/{pack}/{file_type}/{file_name}")
+    #     async def pack_file_request(pack, file_type, file_name, sha256: str = None):
+    #         """
+    #         A method for retrieving a file from a specific pack
+    #         Args:
+    #             pack: Pack id
+    #             file_type: File Type (download, preview)
+    #             file_name: File Name
 
-            Returns:
-                Artifact file
-            """
-            if len(index.index["packs"]) == 0:
-                return JSONResponse("No packs found!", status_code=404)
-            try:
-                return FileResponse(
-                    index.get_file_path(pack, file_type, file_name, sha256),
-                    media_type="application/octet-stream",
-                    status_code=200,
-                )
-            except Exception as e:
-                return JSONResponse(str(e), status_code=404)
+    #         Returns:
+    #             Artifact file
+    #         """
+    #         if len(index.index["packs"]) == 0:
+    #             return JSONResponse("No packs found!", status_code=404)
+    #         try:
+    #             return FileResponse(
+    #                 index.get_file_path(pack, file_type, file_name, sha256),
+    #                 media_type="application/octet-stream",
+    #                 status_code=200,
+    #             )
+    #         except Exception as e:
+    #             return JSONResponse(str(e), status_code=404)
 
     @router.get(prefix + "/reindex")
     async def reindex_request():
@@ -123,30 +123,30 @@ def setup_routes(prefix: str, index):
                 logging.exception(e)
                 return JSONResponse("Reindexing is failed!", status_code=500)
 
-    if isinstance(index, RepositoryIndex):
+    # if isinstance(index, RepositoryIndex):
 
-        @router.get(prefix + "/{branch}")
-        async def repository_branch_request(branch):
-            """
-            A method for retrieving the list of files from a specific branch
-            Made for support of `ufbt update --index-url {base_url}/firmware --branch {branch}`
-            Args:
-                branch: Branch name
+    #     @router.get(prefix + "/{branch}")
+    #     async def repository_branch_request(branch):
+    #         """
+    #         A method for retrieving the list of files from a specific branch
+    #         Made for support of `ufbt update --index-url {base_url}/firmware --branch {branch}`
+    #         Args:
+    #             branch: Branch name
 
-            Returns:
-                HTML links in format that ufbt understands
-            """
-            if len(index.index["channels"]) == 0:
-                return JSONResponse("No channels found!", status_code=404)
-            try:
-                branch_files = index.get_branch_file_names(branch)
-                response = "\n".join(f'<a href="{file}"></a>' for file in branch_files)
-                return HTMLResponse(
-                    response,
-                    status_code=200,
-                )
-            except Exception as e:
-                return JSONResponse(str(e), status_code=404)
+    #         Returns:
+    #             HTML links in format that ufbt understands
+    #         """
+    #         if len(index.index["channels"]) == 0:
+    #             return JSONResponse("No channels found!", status_code=404)
+    #         try:
+    #             branch_files = index.get_branch_file_names(branch)
+    #             response = "\n".join(f'<a href="{file}"></a>' for file in branch_files)
+    #             return HTMLResponse(
+    #                 response,
+    #                 status_code=200,
+    #             )
+    #         except Exception as e:
+    #             return JSONResponse(str(e), status_code=404)
 
 
 for directory, index in indexes.items():
